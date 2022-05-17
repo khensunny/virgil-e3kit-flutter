@@ -43,7 +43,7 @@ class EThreeWrapper: MethodChannel.MethodCallHandler {
             semaphore.release()
           }
 
-          override fun error(code: String?, message: String?, details: Any?) {
+          override fun error(code: String, message: String?, details: Any?) {
             error = Error(message)
             semaphore.release()
           }
