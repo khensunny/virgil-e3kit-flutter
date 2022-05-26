@@ -54,11 +54,11 @@ class VirgilE3kitPlugin: FlutterPlugin, MethodChannel.MethodCallHandler, Activit
     }
 
     override fun onDetachedFromActivity() {
-        TODO("Not yet implemented")
+        // TODO("Not yet implemented")
     }
 
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
-        TODO("Not yet implemented")
+        // TODO("Not yet implemented")
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
@@ -66,6 +66,6 @@ class VirgilE3kitPlugin: FlutterPlugin, MethodChannel.MethodCallHandler, Activit
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
-        TODO("Not yet implemented")
+        // TODO("Not yet implemented")
     }
 }
