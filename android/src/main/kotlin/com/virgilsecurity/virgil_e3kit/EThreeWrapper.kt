@@ -2,15 +2,14 @@ package com.virgilsecurity.virgil_e3kit
 
 import androidx.annotation.NonNull
 
-import android.app.Activity
 import android.content.Context
 import android.os.AsyncTask
+import android.os.Handler
+import android.os.Looper
 import com.virgilsecurity.android.common.callback.OnGetTokenCallback
 import com.virgilsecurity.android.common.exception.FindUsersException
 import com.virgilsecurity.android.common.model.FindUsersResult
 import io.flutter.embedding.engine.plugins.FlutterPlugin
-import io.flutter.embedding.engine.plugins.activity.ActivityAware
-import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
@@ -27,10 +26,9 @@ import java.util.concurrent.Semaphore
 class EThreeWrapper: MethodChannel.MethodCallHandler {
   private lateinit var channel : MethodChannel
   private lateinit var context: Context
-  private lateinit var activity: Activity
   private lateinit var ethree: EThree
 
-  constructor(identity: String, channelID: String, messenger: BinaryMessenger, context: Context, activity: Activity) {
+  constructor(identity: String, channelID: String, messenger: BinaryMessenger, context: Context) {
     val ethree = EThree(identity = identity.toString(), tokenCallback = object : OnGetTokenCallback {
       override fun onGetToken(): String {
         var error: Error? = null
@@ -53,7 +51,7 @@ class EThreeWrapper: MethodChannel.MethodCallHandler {
           }
         }
 
-        activity.runOnUiThread {
+        Handler(Looper.getMainLooper()).post {
           channel.invokeMethod("tokenCallback", null, callback)
         }
 
@@ -63,7 +61,6 @@ class EThreeWrapper: MethodChannel.MethodCallHandler {
     }, context = context)
 
     this.ethree = ethree
-    this.activity = activity
     this.context = context
     this.channel = MethodChannel(messenger, channelID)
     this.channel.setMethodCallHandler(this)
@@ -147,11 +144,11 @@ class EThreeWrapper: MethodChannel.MethodCallHandler {
     AsyncTask.execute {
       try {
         var res: Unit = this.ethree.cleanup()
-        activity.runOnUiThread {
+        Handler(Looper.getMainLooper()).post {
           result.success(true)
         }
       } catch(e: Throwable) {
-        activity.runOnUiThread {
+        Handler(Looper.getMainLooper()).post {
           result.error("2007", e.message, null)
         }
 
@@ -165,7 +162,7 @@ class EThreeWrapper: MethodChannel.MethodCallHandler {
 
     this.ethree.findUser(identity).addCallback(object : OnResultListener<Card> {
       override fun onSuccess(card: Card) {
-        activity.runOnUiThread {
+        Handler(Looper.getMainLooper()).post {
           result.success(card.rawCard.exportAsBase64String())
         }
       }
@@ -186,7 +183,7 @@ class EThreeWrapper: MethodChannel.MethodCallHandler {
           it.value.rawCard.exportAsBase64String()!!
         }
 
-        activity.runOnUiThread {
+        Handler(Looper.getMainLooper()).post {
           result.success(users)
         }
       }
@@ -202,7 +199,7 @@ class EThreeWrapper: MethodChannel.MethodCallHandler {
 
     this.ethree.findCachedUser(identity).addCallback(object : OnResultListener<Card?> {
       override fun onSuccess(card: Card?) {
-        activity.runOnUiThread {
+        Handler(Looper.getMainLooper()).post {
           if (card == null) returnError("2011", Error("card was not found"), result)
           else result.success(card.rawCard.exportAsBase64String())
         }
@@ -224,7 +221,7 @@ class EThreeWrapper: MethodChannel.MethodCallHandler {
           it.value.rawCard.exportAsBase64String()!!
         }
 
-        activity.runOnUiThread {
+        Handler(Looper.getMainLooper()).post {
           result.success(users)
         }
       }
@@ -276,7 +273,7 @@ class EThreeWrapper: MethodChannel.MethodCallHandler {
 
     val res: Unit = this.ethree.authEncrypt(input, inputFile.length() as Int, output, FindUsersResult(cards))
 
-    activity.runOnUiThread {
+    Handler(Looper.getMainLooper()).post {
       result.success(res)
     }
   }
@@ -292,7 +289,7 @@ class EThreeWrapper: MethodChannel.MethodCallHandler {
 
     val res: Unit = this.ethree.authDecrypt(input, output, this.ethree.cardManager.importCardAsString(card))
 
-    activity.runOnUiThread {
+    Handler(Looper.getMainLooper()).post {
       result.success(res)
     }
   }
@@ -300,7 +297,7 @@ class EThreeWrapper: MethodChannel.MethodCallHandler {
   fun completeCallback(code: String, result: Result): OnCompleteListener {
     return object : OnCompleteListener {
       override fun onSuccess() {
-        activity.runOnUiThread {
+        Handler(Looper.getMainLooper()).post {
           result.success(true)
         }
       }
@@ -312,7 +309,7 @@ class EThreeWrapper: MethodChannel.MethodCallHandler {
   }
 
   fun returnError(code: String, throwable: Throwable, result: Result) {
-    activity.runOnUiThread {
+    Handler(Looper.getMainLooper()).post {
       result.error(code, throwable.message, null)
     }
   }

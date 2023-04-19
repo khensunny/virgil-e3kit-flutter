@@ -1,20 +1,16 @@
 package com.virgilsecurity.virgil_e3kit
 
-import android.app.Activity
 import android.content.Context
 import androidx.annotation.NonNull
 import io.flutter.embedding.engine.plugins.FlutterPlugin
-import io.flutter.embedding.engine.plugins.activity.ActivityAware
-import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import java.util.*
 
-class VirgilE3kitPlugin: FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware {
+class VirgilE3kitPlugin: FlutterPlugin, MethodChannel.MethodCallHandler {
     private lateinit var channel : MethodChannel
     private lateinit var context: Context
-    private lateinit var activity: Activity
     private lateinit var messenger: BinaryMessenger
     private lateinit var ethreeWrappers: MutableMap<String, EThreeWrapper>
 
@@ -41,7 +37,7 @@ class VirgilE3kitPlugin: FlutterPlugin, MethodChannel.MethodCallHandler, Activit
         val identity: String = call.argument<String>("identity") as String
         val channelID: String = call.argument<String>("channelID") as String
         try {
-            val ethree = EThreeWrapper(identity, channelID, this.messenger, this.context, this.activity)
+            val ethree = EThreeWrapper(identity, channelID, this.messenger, this.context)
             this.ethreeWrappers.put(channelID, ethree)
             result.success(true)
         } catch(e: Throwable) {
@@ -51,21 +47,5 @@ class VirgilE3kitPlugin: FlutterPlugin, MethodChannel.MethodCallHandler, Activit
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
         channel.setMethodCallHandler(null)
-    }
-
-    override fun onDetachedFromActivity() {
-        // TODO("Not yet implemented")
-    }
-
-    override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
-        // TODO("Not yet implemented")
-    }
-
-    override fun onAttachedToActivity(binding: ActivityPluginBinding) {
-        activity = binding.getActivity()
-    }
-
-    override fun onDetachedFromActivityForConfigChanges() {
-        // TODO("Not yet implemented")
     }
 }
