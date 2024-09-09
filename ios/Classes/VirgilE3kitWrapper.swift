@@ -219,7 +219,7 @@ class EThreeWrapper {
     
     private func authEncrypt(data: String, users: [String: String]?, result: @escaping FlutterResult) {
         do {
-            var findUsersResult: [Card]? = nil
+            var findUsersResult: Dictionary<String, Card>? = nil
             if let users = users {
                 findUsersResult = try users.mapValues {
                     try self.ethree.cardManager.importCard(fromBase64Encoded: $0)
