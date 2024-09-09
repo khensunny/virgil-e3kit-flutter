@@ -235,8 +235,10 @@ class EThreeWrapper {
     private func authDecrypt(data: String, cardStr: String?, result: @escaping FlutterResult) {
         do {
             var card: Card? = nil
-            if cardStr != nil && cardStr != "" {
-                card = try self.ethree.cardManager.importCard(fromBase64Encoded: cardStr)
+            if let cardStr = cardStr {
+                if cardStr != "" {
+                    card = try self.ethree.cardManager.importCard(fromBase64Encoded: cardStr)
+                }
             }
             
             let decryptedData = try self.ethree.authDecrypt(text: data, from: card)
