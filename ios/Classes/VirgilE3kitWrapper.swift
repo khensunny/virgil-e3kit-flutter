@@ -217,11 +217,11 @@ class EThreeWrapper {
         })
     }
     
-    private func authEncrypt(data: String, users: [String: String], result: @escaping FlutterResult) {
+    private func authEncrypt(data: String, users: [String: String]?, result: @escaping FlutterResult) {
         do {
-            let users = try users.mapValues {
+            let users = users != nil ? try users.mapValues {
                 try self.ethree.cardManager.importCard(fromBase64Encoded: $0)
-            }
+            } : nil
             let encyptedData = try self.ethree.authEncrypt(text: data, for: users)
             return result(encyptedData)
         } catch let error {
@@ -229,10 +229,10 @@ class EThreeWrapper {
         }
     }
     
-    private func authDecrypt(data: String, cardStr: String, result: @escaping FlutterResult) {
+    private func authDecrypt(data: String, cardStr: String?, result: @escaping FlutterResult) {
         do {
             var card: Card? = nil
-            if cardStr != "" {
+            if cardStr != nil && cardStr != "" {
                 card = try self.ethree.cardManager.importCard(fromBase64Encoded: cardStr)
             }
             

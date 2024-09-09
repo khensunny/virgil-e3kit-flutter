@@ -237,23 +237,23 @@ class EThreeWrapper: MethodChannel.MethodCallHandler {
   }
 
   fun authEncrypt(@NonNull call: MethodCall, @NonNull result: Result) {
-    val users: HashMap<String, String> = call.argument<HashMap<String, String>>("users") as HashMap<String, String>
+    val users: HashMap<String, String> = call.argument<HashMap<String, String>>("users") as HashMap<String, String>?
     val data: String = call.argument<String>("data") as String
 
-    val cards = users.mapValues {
+    val cards = users?.mapValues {
       this.ethree.cardManager.importCardAsString(it.value)!!
     }
 
-    val res: String = this.ethree.authEncrypt(data, FindUsersResult(cards))
+    val res: String = this.ethree.authEncrypt(data, if (cards != null) FindUsersResult(cards) else null)
 
     result.success(res)
   }
 
   fun authDecrypt(@NonNull call: MethodCall, @NonNull result: Result) {
-    val card: String = call.argument<String>("card") as String
+    val card: String = call.argument<String>("card") as String?
     val data: String = call.argument<String>("data") as String
 
-    val res: String = this.ethree.authDecrypt(data, this.ethree.cardManager.importCardAsString(card))
+    val res: String = this.ethree.authDecrypt(data, if (card != null) this.ethree.cardManager.importCardAsString(card) else null)
 
     result.success(res)
   }

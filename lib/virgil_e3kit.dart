@@ -103,11 +103,11 @@ class Ethree {
     return _channel.invokeMethod("updateCachedUsers");
   }
 
-  Future<String?> authEncrypt(Map users, String data) async {
+  Future<String?> authEncrypt(Map? users, String data) async {
     return _channel.invokeMethod("authEncrypt", {"users": users, "data": data});
   }
 
-  Future<String?> authDecrypt(String data, [String card = ""]) async {
+  Future<String?> authDecrypt(String data, [String? card = ""]) async {
     return _channel.invokeMethod("authDecrypt", {"data": data, "card": card});
   }
 
