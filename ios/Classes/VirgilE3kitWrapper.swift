@@ -219,10 +219,13 @@ class EThreeWrapper {
     
     private func authEncrypt(data: String, users: [String: String]?, result: @escaping FlutterResult) {
         do {
-            let users = users != nil ? try users.mapValues {
-                try self.ethree.cardManager.importCard(fromBase64Encoded: $0)
-            } : nil
-            let encyptedData = try self.ethree.authEncrypt(text: data, for: users)
+            var findUsersResult: [Card]? = nil
+            if let users = users {
+                findUsersResult = try users.mapValues {
+                    try self.ethree.cardManager.importCard(fromBase64Encoded: $0)
+                }
+            }
+            let encyptedData = try self.ethree.authEncrypt(text: data, for: findUsersResult)
             return result(encyptedData)
         } catch let error {
             return result(FlutterError(code: "21", message: "can't encrypt data for user", details: error.localizedDescription))
